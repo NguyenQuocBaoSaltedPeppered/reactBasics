@@ -1,21 +1,37 @@
 import { Button, Modal, Form } from "react-bootstrap";
 import { useEffect, useState } from "react";
-import { createUser } from "../services/UserService";
 import { toast } from "react-toastify";
-
+import { updateUser } from "../services/UserService";
 const ModalEditUser = (props) => {
   const [name, setName] = useState("");
   const [job, setJob] = useState("");
-  const { show, handleCloseEdit, editData } = props;
+  const { show, handleCloseEdit, editData, handleUpdateModalEdit } = props;
 
-  const handleEditUser = () => {};
+  const handleEditUser = async () => {
+    let res = await updateUser(name, job, editData.id);
+    if (res && res.updatedAt) {
+      handleUpdateModalEdit({
+        id: editData.id,
+        email: "Updated@reqres.in",
+        first_name: name,
+        last_name: "Updated",
+      });
+      handleCloseEdit();
+      setName("");
+      setJob("");
+      toast.success("Editted!");
+    } else {
+      toast.error("Something Wrong!");
+    }
+  };
 
   useEffect(() => {
     //Chi khi nao modal edit duoc mo ra va data thay doi thi moi cap nhat lai
     if (show) {
       setName(editData.first_name);
+      setJob("RandomJob");
     }
-  }, [editData]);
+  }, [show, editData]);
   return (
     <>
       <Modal show={show} onHide={handleCloseEdit}>
@@ -42,7 +58,7 @@ const ModalEditUser = (props) => {
                 <Form.Control
                   type="text"
                   placeholder="Job"
-                  value="Random Job"
+                  value={job}
                   onChange={(event) => {
                     setJob(event.target.value);
                   }}

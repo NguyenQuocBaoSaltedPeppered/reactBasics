@@ -11,7 +11,7 @@ const TableUsers = (props) => {
   const [totalPage, setTotalPage] = useState(0);
   const [isShowBtnAddNew, setIsShowBtnAddNew] = useState(false);
   const [isShowBtnEdit, setIsShowBtnEdit] = useState(false);
-  const [editData, setEditData] = useState(false);
+  const [editData, setEditData] = useState({});
 
   const getAllUser = async (page) => {
     let res = await fetchAllUser(page);
@@ -43,6 +43,14 @@ const TableUsers = (props) => {
     // console.log(user);
     setEditData(user);
     setIsShowBtnEdit(true);
+  };
+  const handleUpdateModalEdit = (user) => {
+    // console.log(user);
+    let cloneListUser = [...listUser];
+    let index = listUser.findIndex((item) => item.id === user.id);
+    cloneListUser[index] = user;
+    // console.log(listUser, cloneListUser);
+    setListUser(cloneListUser);
   };
 
   useEffect(() => {
@@ -126,6 +134,7 @@ const TableUsers = (props) => {
         show={isShowBtnEdit}
         handleCloseEdit={handleCloseEdit}
         editData={editData}
+        handleUpdateModalEdit={handleUpdateModalEdit}
       />
     </>
   );

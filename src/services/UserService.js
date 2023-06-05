@@ -10,4 +10,4 @@ const updateUser = async (name, job, id) => {
   return await axios.put(`/api/user/${id}`, { name, job });
 };
 
-export { fetchAllUser, createUser };
+export { fetchAllUser, createUser, updateUser };
