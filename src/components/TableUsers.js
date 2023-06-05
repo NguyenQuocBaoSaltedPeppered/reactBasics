@@ -2,19 +2,21 @@ import { useEffect, useState } from "react";
 import Table from "react-bootstrap/Table";
 import { fetchAllUser } from "../services/UserService";
 import ReactPaginate from "react-paginate";
+import ModalAddNew from "./ModalAddNew";
+import ModalEditUser from "./ModalEditUser";
+import { Button } from "react-bootstrap";
 const TableUsers = (props) => {
   const [listUser, setListUser] = useState([]);
   const [totalUser, setTotalUser] = useState(0);
   const [totalPage, setTotalPage] = useState(0);
-
-  useEffect(() => {
-    getAllUser(1);
-  }, []);
+  const [isShowBtnAddNew, setIsShowBtnAddNew] = useState(false);
+  const [isShowBtnEdit, setIsShowBtnEdit] = useState(false);
+  const [editData, setEditData] = useState(false);
 
   const getAllUser = async (page) => {
     let res = await fetchAllUser(page);
     if (res && res.data) {
-      console.log(res);
+      // console.log(res);
       setListUser(res.data);
       setTotalUser(res.total);
       setTotalPage(res.total_pages);
@@ -28,9 +30,39 @@ const TableUsers = (props) => {
     // console.log(event, typeof event.selected);
     getAllUser(event.selected + 1);
   };
+  const handleCloseAdd = () => {
+    setIsShowBtnAddNew(false);
+  };
+  const handleUpdateTable = (user) => {
+    setListUser([user, ...listUser]);
+  };
+  const handleCloseEdit = () => {
+    setIsShowBtnEdit(false);
+  };
+  const handleEditClick = (user) => {
+    // console.log(user);
+    setEditData(user);
+    setIsShowBtnEdit(true);
+  };
+
+  useEffect(() => {
+    getAllUser(1);
+  }, []);
 
   return (
     <>
+      <div className="my-3 addNew">
+        {/* my co nghia la margin theo truc y (top - bottom)*/}
+        <span>
+          <b>List Users:</b>
+        </span>
+        <button
+          className="btn btn-success "
+          onClick={() => setIsShowBtnAddNew(true)}
+        >
+          Add new Users
+        </button>
+      </div>
       <Table striped bordered hover>
         <thead>
           <tr>
@@ -38,6 +70,7 @@ const TableUsers = (props) => {
             <th>First Name</th>
             <th>Last Name</th>
             <th>Email</th>
+            <th>Actions</th>
           </tr>
         </thead>
         <tbody>
@@ -50,6 +83,15 @@ const TableUsers = (props) => {
                   <td>{item.first_name}</td>
                   <td>{item.last_name}</td>
                   <td>{item.email}</td>
+                  <td>
+                    <Button
+                      className="btn btn-warning"
+                      onClick={() => handleEditClick(item)}
+                    >
+                      Edit
+                    </Button>{" "}
+                    <Button className="btn btn-danger">Delete</Button>
+                  </td>
                 </tr>
               );
             })}
@@ -73,6 +115,17 @@ const TableUsers = (props) => {
         containerClassName="pagination"
         activeClassName="active"
         renderOnZeroPageCount={null}
+      />
+
+      <ModalAddNew
+        show={isShowBtnAddNew}
+        handleCloseAdd={handleCloseAdd}
+        handleUpdateTable={handleUpdateTable}
+      />
+      <ModalEditUser
+        show={isShowBtnEdit}
+        handleCloseEdit={handleCloseEdit}
+        editData={editData}
       />
     </>
   );
