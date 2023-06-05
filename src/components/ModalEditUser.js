@@ -5,7 +5,7 @@ import { updateUser } from "../services/UserService";
 const ModalEditUser = (props) => {
   const [name, setName] = useState("");
   const [job, setJob] = useState("");
-  const { show, handleCloseEdit, editData, handleUpdateModalEdit } = props;
+  const { show, handleClose, editData, handleUpdateModalEdit } = props;
 
   const handleEditUser = async () => {
     let res = await updateUser(name, job, editData.id);
@@ -16,7 +16,7 @@ const ModalEditUser = (props) => {
         first_name: name,
         last_name: "Updated",
       });
-      handleCloseEdit();
+      handleClose();
       setName("");
       setJob("");
       toast.success("Editted!");
@@ -34,7 +34,7 @@ const ModalEditUser = (props) => {
   }, [show, editData]);
   return (
     <>
-      <Modal show={show} onHide={handleCloseEdit}>
+      <Modal show={show} onHide={handleClose}>
         <Modal.Header closeButton>
           <Modal.Title>Edit User Form!</Modal.Title>
         </Modal.Header>
@@ -72,7 +72,7 @@ const ModalEditUser = (props) => {
           </div>
         </Modal.Body>
         <Modal.Footer>
-          <Button variant="secondary" onClick={handleCloseEdit}>
+          <Button variant="secondary" onClick={handleClose}>
             Close
           </Button>
           <Button variant="primary" onClick={() => handleEditUser()}>
