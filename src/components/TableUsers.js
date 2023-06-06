@@ -5,9 +5,11 @@ import { Table, Button } from "react-bootstrap";
 import ModalAddNew from "./ModalAddNew";
 import ModalEditUser from "./ModalEditUser";
 import ModalConfirm from "./ModalConfirm";
-import { CSVDownload, CSVLink } from "react-csv";
+import { CSVLink } from "react-csv";
+import Papa from "papaparse";
 import _ from "lodash";
 import "./TableUsers.scss";
+import { toast } from "react-toastify";
 const TableUsers = (props) => {
   const [listUser, setListUser] = useState([]);
   const [totalUser, setTotalUser] = useState(0);
@@ -24,6 +26,8 @@ const TableUsers = (props) => {
   const [sortField, setSortField] = useState("id");
 
   const [keyword, setKeyword] = useState("");
+
+  const [dataExport, setDataExport] = useState([]);
 
   const getAllUser = async (page) => {
     let res = await fetchAllUser(page);
@@ -95,16 +99,65 @@ const TableUsers = (props) => {
     }
   }, 300);
 
+  const exportUsers = (event, done) => {
+    let result = [];
+    if (listUser && listUser.length > 0) {
+      result.push(["ID", "First Name", "Last Name", "Email"]);
+      listUser.map((item, index) => {
+        let arr = [];
+        arr[0] = item.id;
+        arr[1] = item.first_name;
+        arr[2] = item.last_name;
+        arr[3] = item.email;
+        result.push(arr);
+      });
+      setDataExport(result);
+      done();
+    }
+  };
+
+  const handleImportCSV = (event) => {
+    if (event.target && event.target.files && event.target.files[0]) {
+      let file = event.target.files[0];
+      // console.log(file);
+      Papa.parse(file, {
+        header: true,
+        complete: function (result) {
+          let raw = result.data;
+          if (raw.length > 0) {
+            if (raw[0] && raw[0].length === 4) {
+              if (
+                raw[0][0] !== "ID" &&
+                raw[0][1] !== "First Name" &&
+                raw[0][2] !== "Last Name" &&
+                raw[0][3] !== "Email"
+              ) {
+                toast.error("Wrong format");
+              }
+            } else {
+              let result = [];
+              raw.map((item, index) => {
+                let arr = {};
+                arr.id = item[0];
+                arr.first_name = item[1];
+                arr.last_name = item[2];
+                arr.email = item[3];
+                result.push(arr);
+              });
+              console.log(result);
+              setListUser(result);
+            }
+          } else {
+            toast.error("Input file is empty");
+          }
+        },
+      });
+    }
+  };
+
   useEffect(() => {
     getAllUser(1);
   }, []);
-
-  const csvData = [
-    ["firstname", "lastname", "email"],
-    ["Ahmed", "Tomi", "ah@smthing.co.com"],
-    ["Raed", "Labes", "rl@smthing.co.com"],
-    ["Yezzi", "Min l3b", "ymin@cocococo.com"],
-  ];
 
   return (
     <>
@@ -122,18 +175,21 @@ const TableUsers = (props) => {
             type="file"
             accept=".csv, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel"
             hidden
+            onChange={(event) => handleImportCSV(event)}
           ></input>
           <CSVLink
             className="btn btn-outline-success"
-            data={csvData}
             filename="CSV_Download.csv"
+            data={dataExport}
+            asyncOnClick={true}
+            onClick={exportUsers}
           >
             <i className="fa-solid fa-file-export"></i> Export CSV
           </CSVLink>
           {/* Cai duoi se tu dong download csv ve */}
           {/* <CSVDownload data={csvData} target="_blank" />; */}
           <Button variant="success" onClick={() => setIsShowBtnAddNew(true)}>
-            <i class="fa-solid fa-user-plus"></i> Add new
+            <i className="fa-solid fa-user-plus"></i> Add new
           </Button>
         </div>
       </div>
