@@ -1,3 +1,13 @@
+.addNew{
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  .group-btns{
+    display: flex;
+    gap: 5px;
+  }
+}
+
 .sort-header{
   align-items: center;
   display: flex;

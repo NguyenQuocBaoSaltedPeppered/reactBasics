@@ -5,6 +5,7 @@ import { Table, Button } from "react-bootstrap";
 import ModalAddNew from "./ModalAddNew";
 import ModalEditUser from "./ModalEditUser";
 import ModalConfirm from "./ModalConfirm";
+import { CSVDownload, CSVLink } from "react-csv";
 import _ from "lodash";
 import "./TableUsers.scss";
 const TableUsers = (props) => {
@@ -98,6 +99,13 @@ const TableUsers = (props) => {
     getAllUser(1);
   }, []);
 
+  const csvData = [
+    ["firstname", "lastname", "email"],
+    ["Ahmed", "Tomi", "ah@smthing.co.com"],
+    ["Raed", "Labes", "rl@smthing.co.com"],
+    ["Yezzi", "Min l3b", "ymin@cocococo.com"],
+  ];
+
   return (
     <>
       <div className="my-3 addNew">
@@ -105,12 +113,29 @@ const TableUsers = (props) => {
         <span>
           <b>List Users:</b>
         </span>
-        <button
-          className="btn btn-success "
-          onClick={() => setIsShowBtnAddNew(true)}
-        >
-          Add new Users
-        </button>
+        <div className="group-btns">
+          <label className="btn btn-outline-info" htmlFor="importCSV">
+            <i className="fa-solid fa-file-import"></i> Import CSV
+          </label>
+          <input
+            id="importCSV"
+            type="file"
+            accept=".csv, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel"
+            hidden
+          ></input>
+          <CSVLink
+            className="btn btn-outline-success"
+            data={csvData}
+            filename="CSV_Download.csv"
+          >
+            <i className="fa-solid fa-file-export"></i> Export CSV
+          </CSVLink>
+          {/* Cai duoi se tu dong download csv ve */}
+          {/* <CSVDownload data={csvData} target="_blank" />; */}
+          <Button variant="success" onClick={() => setIsShowBtnAddNew(true)}>
+            <i class="fa-solid fa-user-plus"></i> Add new
+          </Button>
+        </div>
       </div>
       <div className="my-3 col-4 d-flex justify-between">
         <input
