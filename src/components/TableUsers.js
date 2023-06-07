@@ -125,27 +125,27 @@ const TableUsers = (props) => {
         complete: function (result) {
           let raw = result.data;
           if (raw.length > 0) {
-            if (raw[0] && raw[0].length === 4) {
+            if (raw[0] && raw[0].length === 3) {
               if (
-                raw[0][0] !== "ID" &&
-                raw[0][1] !== "First Name" &&
-                raw[0][2] !== "Last Name" &&
-                raw[0][3] !== "Email"
+                raw[0][1] !== "first_name" &&
+                raw[0][2] !== "last_name" &&
+                raw[0][3] !== "email"
               ) {
                 toast.error("Wrong format");
               }
             } else {
-              let result = [];
+              let importedData = [];
               raw.map((item, index) => {
                 let arr = {};
-                arr.id = item[0];
-                arr.first_name = item[1];
-                arr.last_name = item[2];
-                arr.email = item[3];
-                result.push(arr);
+                arr.first_name = item.first_name;
+                arr.last_name = item.last_name;
+                arr.email = item.email;
+                arr.id = Math.floor(Math.random() * 100) + 1;
+                importedData.push(arr);
               });
-              console.log(result);
-              setListUser(result);
+              console.log(importedData);
+              // console.log(">>>Data:", raw);
+              setListUser(importedData);
             }
           } else {
             toast.error("Input file is empty");
